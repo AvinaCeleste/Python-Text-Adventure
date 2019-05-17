@@ -105,27 +105,18 @@ def scavenge():
     driftwood = randint(1,30)
           
 def health_bars():
-    for c in health:
-        if health[c] >= 91:
-            print(c + " ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛ " + str(health[c]) + "%")
-        elif health[c] >= 81:
-            print(c + " ⬛⬛⬛⬛⬛⬛⬛⬛⬛⬜ " + str(health[c]) + "%")
-        elif health[c] >= 71:
-            print(c + " ⬛⬛⬛⬛⬛⬛⬛⬛⬜⬜ " + str(health[c]) + "%")
-        elif health[c] >= 61:
-            print(c + " ⬛⬛⬛⬛⬛⬛⬛⬜⬜⬜ " + str(health[c]) + "%")
-        elif health[c] >= 51:
-            print(c + " ⬛⬛⬛⬛⬛⬛⬜⬜⬜⬜ " + str(health[c]) + "%")
-        elif health[c] >= 41:
-            print(c + " ⬛⬛⬛⬛⬛⬜⬜⬜⬜⬜ " + str(health[c]) + "%")
-        elif health[c] >= 31:
-            print(c + " ⬛⬛⬛⬛⬜⬜⬜⬜⬜⬜ " + str(health[c]) + "%")
-        elif health[c] >= 21:
-            print(c + " ⬛⬛⬛⬜⬜⬜⬜⬜⬜⬜ " + str(health[c]) + "%")
-        elif health[c] >= 11:
-            print(c + " ⬛⬛⬜⬜⬜⬜⬜⬜⬜⬜ " + str(health[c]) + "%")
-        else:
-            print(c + " ⬛⬜⬜⬜⬜⬜⬜⬜⬜⬜ " + str(health[c]) + "%")
+    def bars(bar_x):
+        bar_val = int(round(health[bar_x]/10, 0))
+        bar = ""
+        for x in range(0,10):
+            if bar_val > 0:
+                bar += "⬛"
+                bar_val -= 1
+            else:
+                bar += "⬜"
+        final_string = bar_x+" "+ bar +" "+str(health[bar_x])+"%"
+        return final_string
+    print(bars("Health")+"\n"+bars("Hunger")+"\n"+bars("Hydration"))
     choices()
             
         
