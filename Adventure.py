@@ -10,19 +10,48 @@ Scavenge - Searches the island for useful material.
 Consume - Consumes the item selected
 """
 
-inventory = {"raw fish" : 0, "fishing rod" : 0, "stone" : 0, "wood" : 0, "rope" : 0, "bait" : 0, "cooked fish" : 0}
+#Inventory class, holds single name, plural name, and quantity of item
+class inventory():
+    def __init__(self,single,plural,quantity):
+        self.single = single
+        self.plural = plural
+        self.quantity = quantity
+#Food class, inherits inventory class attributes and holds item food, health, and hydration value
+class food(inventory):
+    def __init__(self,single,plural,quantity,food_val,heal_val,hyd_val):
+        inventory.__init__(self,single,plural,quantity)
+        self.food_val = food_val
+        self.heal_val = heal_val
+        self.hyd_val = hyd_val
+#Plural var
+same = "="
+s = "s"        
+#Inventory objects
+fishing_rod = inventory("fishing rod",s,0)
+stone=inventory("stone",s,0)
+wood=inventory("wood",same,0)
+rope=inventory("rope",s,0)
+#Food objects
+raw_fish = food("raw fish",same,0,0,0,0)
+coconut = food("coconut",s,0,0,0,0)
+cooked_fish = food("cooked fish",same,0,0,0,0)
+#List w/ inventory objects
+items = {raw_fish,coconut,cooked_fish,fishing_rod,stone,wood,rope}
+        
+#inventory = {"raw fish" : 0, "fishing rod" : 0, "stone" : 0, "wood" : 0, "rope" : 0, "bait" : 0, "cooked fish" : 0}
 timer = {"fish" : 0, "search" : 0, "boat" : 0, "tree" : 0}
 health = {"Hunger" : 0, "Hydration" : 0, "Health" : 0}
 trees = {"t1" : 0, "t2" : 0, "t3" : 0, "t4" : 0,"t5" : 0, "t6" : 0,"t7" : 0, "t8" : 0,"t9" : 0, "t10" : 0}
 game_torf = False
 
+#Resets inventory and island. Restarts game.
 def reset_game():
     print("""▀▀█▀▀ ▒█░▒█ ▒█▀▀▀ 　 ▀█▀ ▒█▀▀▀█ ▒█░░░ ░█▀▀█ ▒█▄░▒█ ▒█▀▀▄ 
 ░▒█░░ ▒█▀▀█ ▒█▀▀▀ 　 ▒█░ ░▀▀▀▄▄ ▒█░░░ ▒█▄▄█ ▒█▒█▒█ ▒█░▒█ 
 ░▒█░░ ▒█░▒█ ▒█▄▄▄ 　 ▄█▄ ▒█▄▄▄█ ▒█▄▄█ ▒█░▒█ ▒█░░▀█ ▒█▄▄▀""")
     print("The objective of the game is to survive and thrive for as long as possible. Type \"Help\" for a list of commands. ")
-    for x in inventory:
-        inventory[x] = 0
+    for x in items:
+        x.quantity = 0
     for y in timer:
         timer[y] = 0
     for x in trees:
@@ -36,7 +65,7 @@ def game_over():
     print("""▒█▀▀█ ░█▀▀█ ▒█▀▄▀█ ▒█▀▀▀ 　 ▒█▀▀▀█ ▒█░░▒█ ▒█▀▀▀ ▒█▀▀█ 
 ▒█░▄▄ ▒█▄▄█ ▒█▒█▒█ ▒█▀▀▀ 　 ▒█░░▒█ ░▒█▒█░ ▒█▀▀▀ ▒█▄▄▀ 
 ▒█▄▄█ ▒█░▒█ ▒█░░▒█ ▒█▄▄▄ 　 ▒█▄▄▄█ ░░▀▄▀░ ▒█▄▄▄ ▒█░▒█ """)
-    choice_go = input("Ready to play again? Type anything to continue.").lower()
+    choice_go = input("Ready to play again? Type yes to continue. ").lower()
     if choice_go == "yes" or choice_go == "y":
         reset_game()
     else:
@@ -46,14 +75,14 @@ def fishing():
     fish_caught = randint(1,3)
     if fish_caught == 1:
         print("Congratulations, you caught a fish!")
-        inventory["raw fish"] += 1
+        raw_fish.quantity += 1
     else:
         print("The fish don't seem to be biting.")
     events()
     choices()
     
 def consume():
-    consume_input = input("What would you like to consume? ")
+    '''consume_input = input("What would you like to consume? ")
     if consume_input == "raw fish":
         if inventory["raw fish"] > 0:
             inventory["raw fish"] -= 1
@@ -63,14 +92,23 @@ def consume():
         else:
             print("You don't have any raw fish.")
     else:
-        print("Invalid choice.")
+        print("Invalid choice.")'''
     choices()
          
 def inventory_fun():
     inventory_list = "You have "
-    for x in inventory:
-            if inventory[x] >= 1:
-                inventory_list += str(inventory[x]) + " " + str(x) +", "
+    inv_text = "{} {}{}, "
+    for x in items:
+        if x.quantity > 0:
+            if x.quantity == 1:
+                inventory_list += inv_text.format(str(x.quantity),x.single,"")
+            else:
+                if x.plural == same:
+                    inventory_list += inv_text.format(str(x.quantity),x.single,"")
+                elif x.plural == s:
+                    inventory_list += inv_text.format(str(x.quantity),x.single,"s")
+                else:
+                    inventory_list += inv_text.format(str(x.quantity),x.plural,"")
     if inventory_list == "You have ":
             inventory_list += "nothing."
     else:
