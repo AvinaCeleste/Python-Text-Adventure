@@ -37,8 +37,8 @@ coconut = food("coconut",s,0,0,0,0)
 cooked_fish = food("cooked fish",same,0,0,0,0)
 #List w/ inventory objects
 items = {raw_fish,coconut,cooked_fish,fishing_rod,stone,wood,rope}
-        
-#inventory = {"raw fish" : 0, "fishing rod" : 0, "stone" : 0, "wood" : 0, "rope" : 0, "bait" : 0, "cooked fish" : 0}
+
+
 timer = {"fish" : 0, "search" : 0, "boat" : 0, "tree" : 0}
 health = {"Hunger" : 0, "Hydration" : 0, "Health" : 0}
 trees = {"t1" : 0, "t2" : 0, "t3" : 0, "t4" : 0,"t5" : 0, "t6" : 0,"t7" : 0, "t8" : 0,"t9" : 0, "t10" : 0}
@@ -82,17 +82,39 @@ def fishing():
     choices()
     
 def consume():
-    '''consume_input = input("What would you like to consume? ")
-    if consume_input == "raw fish":
-        if inventory["raw fish"] > 0:
-            inventory["raw fish"] -= 1
-            health["Hunger"] += 10
-            health["Health"] -= 5
-            print("You ate raw fish. It made you a bit queasy but you feel less hungry.")
-        else:
-            print("You don't have any raw fish.")
+    food_list = "You have "
+    food_text = "{} {}{}, "
+    for i in items:
+        if isinstance(i,food):
+            if i.quantity > 0:
+                if i.quantity == 1:
+                    food_list += food_text.format(str(i.quantity),i.single,"")
+                else:
+                    if i.plural == same:
+                        food_list += food_text.format(str(i.quantity),i.single,"")
+                    elif i.plural == s:
+                        food_list += food_text.format(str(i.quantity),i.single,"s")
+                    else:
+                        food_list += food_text.format(str(i.quantity),i.plural,"")
+    if food_list == "You have ":
+            food_list += "nothing."
     else:
-        print("Invalid choice.")'''
+            food_list += "and nothing else."
+    print(food_list)
+    consume_input = input("What would you like to consume? ")
+    item_to_consume = 0
+    for x in items:
+        if isinstance(x,food):
+            if consume_input == x.single:
+                item_to_consume = x
+    if item_to_consume == 0:
+        print("You can't eat that!")
+    else:
+        if item_to_consume.quantity == 0:
+            print("You don't have any {}.".format(item_to_consume.single))
+        else:
+            item_to_consume.quantity -= 1
+            print("You have eaten a {}.".format(item_to_consume.single))
     choices()
          
 def inventory_fun():
