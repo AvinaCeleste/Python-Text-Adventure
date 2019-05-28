@@ -9,13 +9,16 @@ Craft - Opens crafting menu.
 Scavenge - Searches the island for useful material.
 Consume - Consumes the item selected
 """
-
 #Inventory class, holds single name, plural name, and quantity of item
 class inventory():
     def __init__(self,single,plural,quantity):
         self.single = single
         self.plural = plural
         self.quantity = quantity
+        if self.plural == same:
+            self.plural = self.single
+        if self.plural == s:
+            self.plural = self.single+"s"
 #Food class, inherits inventory class attributes and holds item food, health, and hydration value
 class food(inventory):
     def __init__(self,single,plural,quantity,food_val,heal_val,hyd_val):
@@ -23,6 +26,11 @@ class food(inventory):
         self.food_val = food_val
         self.heal_val = heal_val
         self.hyd_val = hyd_val
+    def add_health(self):
+        health["Health"] += self.heal_val
+        health["Hunger"] += self.food_val
+        health["Hydration"] += self.hyd_val
+
 #Plural var
 same = "="
 s = "s"        
@@ -31,14 +39,16 @@ fishing_rod = inventory("fishing rod",s,0)
 stone=inventory("stone",s,0)
 wood=inventory("wood",same,0)
 rope=inventory("rope",s,0)
+bottle=inventory("bottle",s,0)
 #Food objects
-raw_fish = food("raw fish",same,0,0,0,0)
-coconut = food("coconut",s,0,0,0,0)
-cooked_fish = food("cooked fish",same,0,0,0,0)
+raw_fish = food("raw fish",same,0,20,-5,5)
+coconut = food("coconut",s,0,10,5,20)
+cooked_fish = food("cooked fish",same,0,30,15,5)
+grubs = food("grubs",same,0,5,0,5)
 #List w/ inventory objects
 items = {raw_fish,coconut,cooked_fish,fishing_rod,stone,wood,rope}
 
-
+#To be: optimized
 timer = {"fish" : 0, "search" : 0, "boat" : 0, "tree" : 0}
 health = {"Hunger" : 0, "Hydration" : 0, "Health" : 0}
 trees = {"t1" : 0, "t2" : 0, "t3" : 0, "t4" : 0,"t5" : 0, "t6" : 0,"t7" : 0, "t8" : 0,"t9" : 0, "t10" : 0}
@@ -83,54 +93,43 @@ def fishing():
     
 def consume():
     food_list = "You have "
-    food_text = "{} {}{}, "
+    item_to_consume = 0
+    """food_text = "{} {}{}, """
     for i in items:
         if isinstance(i,food):
-            if i.quantity > 0:
-                if i.quantity == 1:
-                    food_list += food_text.format(str(i.quantity),i.single,"")
-                else:
-                    if i.plural == same:
-                        food_list += food_text.format(str(i.quantity),i.single,"")
-                    elif i.plural == s:
-                        food_list += food_text.format(str(i.quantity),i.single,"s")
-                    else:
-                        food_list += food_text.format(str(i.quantity),i.plural,"")
+            if i.quantity == 1:
+                food_list += "1 %s, " % i.single
+            if i.quantity > 1:
+                food_list += "%s %s, " % (str(i.quantity),i.plural)
     if food_list == "You have ":
             food_list += "nothing."
+            print(food_list)
     else:
             food_list += "and nothing else."
-    print(food_list)
-    consume_input = input("What would you like to consume? ")
-    item_to_consume = 0
-    for x in items:
-        if isinstance(x,food):
-            if consume_input == x.single:
-                item_to_consume = x
-    if item_to_consume == 0:
-        print("You can't eat that!")
-    else:
-        if item_to_consume.quantity == 0:
-            print("You don't have any {}.".format(item_to_consume.single))
-        else:
-            item_to_consume.quantity -= 1
-            print("You have eaten a {}.".format(item_to_consume.single))
+            print(food_list)
+            consume_input = input("What would you like to consume? ").lower()
+            for x in items:
+                if isinstance(x,food):
+                    if consume_input == x.single or consume_input == x.plural:
+                        item_to_consume = x
+            if item_to_consume == 0:
+                print("You can't eat that!")
+            else:
+                if item_to_consume.quantity == 0:
+                    print("You don't have any {}.".format(item_to_consume.single))
+                else:
+                    item_to_consume.add_health()
+                    item_to_consume.quantity -= 1
+                    print("You have eaten a {}.".format(item_to_consume.single))
     choices()
          
 def inventory_fun():
     inventory_list = "You have "
-    inv_text = "{} {}{}, "
     for x in items:
-        if x.quantity > 0:
-            if x.quantity == 1:
-                inventory_list += inv_text.format(str(x.quantity),x.single,"")
-            else:
-                if x.plural == same:
-                    inventory_list += inv_text.format(str(x.quantity),x.single,"")
-                elif x.plural == s:
-                    inventory_list += inv_text.format(str(x.quantity),x.single,"s")
-                else:
-                    inventory_list += inv_text.format(str(x.quantity),x.plural,"")
+        if x.quantity == 1:
+            inventory_list += "1 %s, " % x.single
+        if x.quantity > 1:
+            inventory_list += "%s %s, " % (str(x.quantity),x.plural)
     if inventory_list == "You have ":
             inventory_list += "nothing."
     else:
@@ -159,10 +158,11 @@ def events():
     
 
 def scavenge():
-    stone = randint(1,30)
+    """stone = randint(1,30)
     bottle = randint(1,100)
     bugs = randint(1,30)
-    driftwood = randint(1,30)
+    driftwood = randint(1,30)"""
+    choices()
           
 def health_bars():
     def bars(bar_x):
